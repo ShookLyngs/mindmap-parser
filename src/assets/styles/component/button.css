@@ -1,0 +1,21 @@
+.button {
+  @apply transition duration-100 cursor-pointer select-none;
+
+  &.is-loading {
+    @apply cursor-progress;
+  }
+  &.is-disabled {
+    @apply cursor-not-allowed;
+  }
+}
+
+.opacity-button {
+  @apply transition duration-150 cursor-pointer select-none hover:opacity-90 active:opacity-80;
+
+  &.is-loading {
+    @apply opacity-100 cursor-progress;
+  }
+  &.is-disabled {
+    @apply opacity-70 cursor-not-allowed;
+  }
+}
