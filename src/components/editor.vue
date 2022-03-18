@@ -5,6 +5,8 @@
       class="outline-none overflow-auto resize-none"
       :placeholder="placeholder"
       v-model="input"
+      @focus="emit('focus')"
+      @blur="emit('blur')"
     />
   </div>
 </template>
@@ -12,7 +14,7 @@
 <script setup lang="ts">
   import { ref, toRef, watch } from 'vue';
 
-  const emit = defineEmits([ 'update:model-value' ]);
+  const emit = defineEmits(['update:model-value', 'focus', 'blur']);
   const props = defineProps({
     modelValue: {
       type: String,
@@ -24,8 +26,9 @@
     },
   });
 
-  const input = ref('');
   const value = toRef(props, 'modelValue');
+  const input = ref(value.value);
+
   watch(value, (value: string) => input.value = value);
   watch(input, (value: string) => emit('update:model-value', value));
 </script>
