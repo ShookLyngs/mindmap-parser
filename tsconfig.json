@@ -11,7 +11,11 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "composite": false,
-    "lib": ["esnext", "dom"]
+    "lib": ["esnext", "dom"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "mindmap-parser/*": ["./src/packages/mindmap/*"]
+    }
   },
   "exclude": [
     "node_modules"
