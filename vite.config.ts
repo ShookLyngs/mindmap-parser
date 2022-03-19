@@ -16,7 +16,7 @@ export default defineConfig({
     alias: [
       { find: /^~/, replacement: '' },
       { find: '@', replacement: resolve('src') },
-      { find: 'mindmap', replacement: resolve('src/packages/mindmap') },
+      { find: 'mindmap-parser', replacement: resolve('src/packages/mindmap-parser') },
     ],
   },
   plugins: [

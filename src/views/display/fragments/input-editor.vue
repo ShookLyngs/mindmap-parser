@@ -34,8 +34,7 @@
     - Child 1-2
   - Child 2
     - Child 2-1
-    - Child 2-2
-  `);
+    - Child 2-2`);
   function clear() {
     input.value = '';
   }
