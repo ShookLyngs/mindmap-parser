@@ -2,11 +2,8 @@
 import { onUnmounted, ref } from 'vue';
 // Types
 import { Ref } from 'vue';
-import { Noop } from '@/modules/define/function';
+import { Noop } from '@/modules/constant/function';
 
-/**
- * Simple hook to create a custom event listener.
- */
 export function useListener<T extends ((...args: any[]) => any) = Noop>({ clearOnUnmount = false } = {}) {
   const listeners: Ref<T[]> = ref([]);
 
