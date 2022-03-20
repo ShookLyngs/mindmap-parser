@@ -7,6 +7,12 @@ export interface NodeStyle {
     x: number;
     y: number;
   };
+  backgroundColor: string;
+}
+
+export interface NodeTheme {
+  normal: NodeStyle;
+  columns: Record<number, NodeStyle>;
 }
 
 export const normalNodeStyle: NodeStyle = {
@@ -16,6 +22,22 @@ export const normalNodeStyle: NodeStyle = {
   },
   margin: {
     x: 20,
-    y: 8,
+    y: 10,
   },
+  backgroundColor: '#fff',
 };
+
+export const normalNodeTheme: NodeTheme = {
+  normal: normalNodeStyle,
+  columns: {},
+};
+
+export interface CreateNodeThemeParams {
+  normal: NodeStyle;
+  columns?: Record<number, NodeStyle>;
+}
+export function createNodeTheme(theme: NodeTheme) {
+  return {
+    normal: theme.normal
+  };
+}

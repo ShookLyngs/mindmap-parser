@@ -1,2 +1,2 @@
-export * from './node/canvas';
-export * from './node/render-node';
+export * from './canvas/canvas';
+export * from './node/node';
