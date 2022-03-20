@@ -2,6 +2,7 @@ import { G, Svg } from '@svgdotjs/svg.js';
 import { NodeTheme, normalNodeStyle, normalNodeTheme } from '@/packages/mindmap-parser/node/node-style';
 import { RenderContentNode } from '@/packages/mindmap-parser/node/content-node';
 import { createRenderNodeContext, RenderNodeContext } from '@/packages/mindmap-parser/node/context';
+import { RenderNodeLineGroup } from '@/packages/mindmap-parser/node/line';
 
 export interface RawNode {
   content: string;
@@ -36,6 +37,7 @@ export class RenderNode {
   children: RenderNode[];
   context: RenderNodeContext;
   childrenSize: RenderChildrenNodeSize;
+  lineGroup: RenderNodeLineGroup;
 
   get isRoot() {
     return this.parent === void 0 || this.parent === null;
@@ -56,6 +58,7 @@ export class RenderNode {
     if (parent instanceof Svg) {
       this.context = createRenderNodeContext({
         canvas: parent,
+        root: this,
         theme,
       });
     } else {
@@ -68,6 +71,9 @@ export class RenderNode {
 
     this.updateNodePosition();
     this.updateChildrenGroupPosition();
+
+    // Render line
+    this.renderLineGroup();
   }
 
   /**
@@ -184,5 +190,25 @@ export class RenderNode {
 
     this.childrenGroup.x(x + width + margin.x);
     this.childrenGroup.y(y + height / 2 - firstChildYDiff - (childrenSize.height / 2));
+  }
+
+  /**
+   * Line
+   */
+
+  renderLineGroup() {
+    // Create or update line group
+    if (!this.lineGroup) {
+      this.lineGroup = new RenderNodeLineGroup(this);
+    } else {
+      this.lineGroup.render();
+    }
+
+    // update children line groups
+    if (this.children) {
+      this.children.forEach((child) => {
+        child.renderLineGroup();
+      });
+    }
   }
 }
