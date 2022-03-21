@@ -1,6 +1,6 @@
 import { Svg } from '@svgdotjs/svg.js';
+import { RenderNode } from './node';
 import { NodeTheme, normalNodeTheme } from './node-style';
-import { RenderNode } from '@/packages/mindmap-parser';
 
 export interface CreateRenderNodeContextParams {
   canvas: Svg;

@@ -1,13 +1,9 @@
 import { G, Svg } from '@svgdotjs/svg.js';
-import { NodeTheme, normalNodeStyle, normalNodeTheme } from '@/packages/mindmap-parser/node/node-style';
-import { RenderContentNode } from '@/packages/mindmap-parser/node/content-node';
-import { createRenderNodeContext, RenderNodeContext } from '@/packages/mindmap-parser/node/context';
-import { RenderNodeLineGroup } from '@/packages/mindmap-parser/node/line';
-
-export interface RawNode {
-  content: string;
-  children?: RawNode[];
-}
+import { createRenderNodeContext, RenderNodeContext } from './context';
+import { isRawNodeDifferent, RawNode } from './raw-node';
+import { RenderContentNode } from './content-node';
+import { RenderNodeLineGroup } from './line';
+import { NodeTheme } from './node-style';
 
 export interface CreateRenderNodeParams {
   raw: RawNode;
@@ -31,11 +27,11 @@ export class RenderNode {
   index?: number;
   raw: RawNode;
   node: RenderContentNode;
+  context: RenderNodeContext;
   group: G;
   childrenGroup: G;
   parent?: RenderNode;
   children: RenderNode[];
-  context: RenderNodeContext;
   childrenSize: RenderChildrenNodeSize;
   lineGroup: RenderNodeLineGroup;
 
@@ -66,14 +62,7 @@ export class RenderNode {
       this.context = context;
     }
 
-    this.renderNode();
-    this.renderChildrenGroup(raw.children);
-
-    this.updateNodePosition();
-    this.updateChildrenGroupPosition();
-
-    // Render line
-    this.renderLineGroup();
+    this.render();
   }
 
   /**
@@ -126,7 +115,7 @@ export class RenderNode {
    */
 
   renderChildrenGroup(children?: RawNode[]) {
-    this.children = [];
+    this.removeChildren();
     this.childrenSize = {
       maxHeight: 0,
       height: 0,
@@ -170,10 +159,7 @@ export class RenderNode {
       // Update children group size
       this.childrenSize.y = this.childrenGroup.bbox().y;
     } else {
-      // If no children, remove children group
-      if (this.childrenGroup) {
-        this.childrenGroup.clear();
-      }
+      this.removeChildren();
     }
   }
 
@@ -190,6 +176,14 @@ export class RenderNode {
 
     this.childrenGroup.x(x + width + margin.x);
     this.childrenGroup.y(y + height / 2 - firstChildYDiff - (childrenSize.height / 2));
+  }
+
+  removeChildren() {
+    if (this.childrenGroup) {
+      this.childrenGroup.clear();
+    }
+
+    this.children = [];
   }
 
   /**
@@ -209,6 +203,56 @@ export class RenderNode {
       this.children.forEach((child) => {
         child.renderLineGroup();
       });
+    }
+  }
+
+  removeLines() {
+    this.lineGroup.removeLines();
+  }
+  removeChildrenLines() {
+    if (this.children) {
+      this.children.forEach((child) => {
+        child.removeLines();
+        child.removeChildrenLines();
+      });
+    }
+  }
+
+  /**
+   * Render
+   */
+
+  render() {
+    // Render Node and its children nodes
+    this.renderNode();
+    this.renderChildrenGroup(this.raw.children);
+
+    // Update positions
+    this.updateNodePosition();
+    this.updateChildrenGroupPosition();
+
+    // Render line
+    this.renderLineGroup();
+  }
+
+  update(raw: RawNode) {
+    if (this.raw.content !== this.content) {
+      this.raw = raw;
+      this.content = raw.content;
+
+      this.render();
+    } else if (isRawNodeDifferent(this.raw, raw)) {
+      this.raw.children = raw.children;
+
+      // Remove lines, and then render children nodes
+      this.removeChildrenLines();
+      this.renderChildrenGroup(raw.children);
+
+      // Update positions
+      this.updateChildrenGroupPosition();
+
+      // Render line
+      this.renderLineGroup();
     }
   }
 }

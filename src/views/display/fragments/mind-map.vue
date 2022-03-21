@@ -14,6 +14,7 @@
   // Functions
   import { ref, watchEffect } from 'vue';
   import { createMindmapParser, MindmapParser } from '@/packages/mindmap-parser';
+  import { testRawNode, testRawNodeAddedChild114, testRawNodeAddedChild134 } from '@/views/display/constant/node';
 
   const canvas = ref<HTMLDivElement>();
   const parser = ref<MindmapParser<HTMLDivElement>>();
@@ -25,78 +26,18 @@
     if (canvas.value) {
       parser.value = createMindmapParser({
         selector: canvas.value,
-        root: {
-          content: 'Root',
-          children: [
-            {
-              content: 'Child 1',
-              children: [
-                {
-                  content: 'Child 1-1',
-                  children: [
-                    {
-                      content: 'Child 1-1-1',
-                    },
-                    {
-                      content: 'Child 1-1-2',
-                    },
-                    {
-                      content: 'Child 1-1-3',
-                      children: [
-                        {
-                          content: 'Child 1-1-3-1',
-                        },
-                        {
-                          content: 'Child 1-1-3-2',
-                        },
-                        {
-                          content: 'Child 1-1-3-3',
-                        },
-                        {
-                          content: 'Child 1-1-3-4',
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  content: 'Child 1-2 Super Long Text to cover up',
-                },
-                {
-                  content: 'Child 1-3',
-                  children: [
-                    {
-                      content: 'Child 1-3-1',
-                    },
-                    {
-                      content: 'Child 1-3-2',
-                    },
-                    {
-                      content: 'Child 1-3-3',
-                    },
-                  ],
-                },
-                {
-                  content: 'Child 1-4',
-                },
-              ],
-            },
-            {
-              content: 'Child 2',
-              children: [
-                {
-                  content: 'Child 2-1',
-                },
-                {
-                  content: 'Child 2-2',
-                },
-              ],
-            },
-          ],
-        },
+        root: testRawNode,
       });
 
       resize();
+
+      setTimeout(() => {
+        parser.value!.node.update(testRawNodeAddedChild114);
+      }, 1000);
+
+      setTimeout(() => {
+        parser.value!.node.update(testRawNodeAddedChild134);
+      }, 3000);
     }
   });
 </script>

@@ -26,6 +26,7 @@ export class RenderNodeLineGroup {
 
   removeLines() {
     this.lines.forEach(line => line.remove());
+    this.lines = [];
   }
 
   render() {
@@ -39,6 +40,10 @@ export class RenderNodeLine {
   parent: RenderNode;
   target: RenderNode;
   line: Path;
+
+  get style() {
+    return this.parent.style;
+  }
 
   constructor(parent: RenderNode, target: RenderNode) {
     this.parent = parent;
@@ -67,7 +72,7 @@ export class RenderNodeLine {
     if (!this.line) {
       // Draw a line from parent to the target
       this.line = this.parent.context.root.group.path(path);
-      this.line.stroke({ width: 2, color: '#333' });
+      this.line.stroke(this.style.lineStroke);
       this.line.fill('none');
     } else {
       // Update line

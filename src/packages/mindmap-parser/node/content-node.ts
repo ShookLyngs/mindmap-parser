@@ -14,6 +14,9 @@ export class RenderContentNode {
   get column() {
     return this.parent.column;
   }
+  get style() {
+    return this.parent.style;
+  }
   get size() {
     return this.bbox();
   }
@@ -38,7 +41,7 @@ export class RenderContentNode {
     const size = text.bbox();
 
     // Get NodeStyle
-    const { padding, backgroundColor } = this.context.theme.normal;
+    const { padding, backgroundColor, backgroundRadius, backgroundStroke } = this.style;
 
     // Create background node, insert before text node
     const background = new Rect({
@@ -49,8 +52,9 @@ export class RenderContentNode {
     });
 
     // Style background node
-    background.radius(padding.x);
     background.fill(backgroundColor);
+    background.stroke(backgroundStroke);
+    background.radius(backgroundRadius);
 
     // Insert before text node
     this.node.add(background, 0);
