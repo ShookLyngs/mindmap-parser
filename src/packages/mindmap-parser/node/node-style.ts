@@ -1,4 +1,4 @@
-import { StrokeData } from '@svgdotjs/svg.js';
+import { FontData, StrokeData } from '@svgdotjs/svg.js';
 
 
 export interface NodeSpace {
@@ -12,6 +12,7 @@ export interface NodeStyle {
   backgroundColor: string;
   backgroundRadius: number;
   backgroundStroke: StrokeData;
+  textFont: FontData;
 }
 
 export interface NodeTheme {
@@ -38,11 +39,38 @@ export const normalNodeStyle: NodeStyle = {
   },
   backgroundRadius: 6,
   backgroundColor: '#fff',
+  textFont: {},
+};
+
+export const rootNodeStyle: NodeStyle = {
+  padding: {
+    x: 20,
+    y: 8,
+  },
+  margin: {
+    x: 30,
+    y: 10,
+  },
+  lineStroke: {
+    width: 2,
+    color: '#333',
+  },
+  backgroundStroke: {
+    width: 2,
+    color: '#2a3ada',
+  },
+  backgroundRadius: 6,
+  backgroundColor: '#fff',
+  textFont: {
+    size: '1.2em',
+  },
 };
 
 export const normalNodeTheme: NodeTheme = {
   normal: normalNodeStyle,
-  columns: {},
+  columns: {
+    0: rootNodeStyle,
+  },
 };
 
 export function createNodeTheme(theme: Partial<NodeTheme>) {

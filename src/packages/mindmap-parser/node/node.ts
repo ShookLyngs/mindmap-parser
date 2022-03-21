@@ -38,11 +38,15 @@ export class RenderNode {
   get isRoot() {
     return this.parent === void 0 || this.parent === null;
   }
-  get style() {
-    return this.context.theme.normal;
-  }
   get size() {
     return this.node.size;
+  }
+  get style() {
+    if (this.context.theme.columns[this.column]) {
+      return this.context.theme.columns[this.column];
+    } else {
+      return this.context.theme.normal;
+    }
   }
 
   constructor({ raw, column, index, context, parent, theme }: CreateRenderNodeParams) {

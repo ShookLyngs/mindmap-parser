@@ -34,14 +34,15 @@ export class RenderContentNode {
     this.node = this.parent.group.group();
     this.node.addClass('node-content');
 
+    // Get NodeStyle
+    const { padding, backgroundColor, textFont, backgroundRadius, backgroundStroke } = this.style;
+
     // Create text node
     const text = this.node.text(this.content);
+    text.font(textFont);
 
     // Get text box size
     const size = text.bbox();
-
-    // Get NodeStyle
-    const { padding, backgroundColor, backgroundRadius, backgroundStroke } = this.style;
 
     // Create background node, insert before text node
     const background = new Rect({
