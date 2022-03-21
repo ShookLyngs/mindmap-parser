@@ -66,8 +66,9 @@ export class RenderContentNode {
   }
 
   remove() {
-    const content = this.parent.group.findOne('.node-content');
-    if (content) content.remove();
+    if (this.node) {
+      this.node.remove();
+    }
   }
 
   bbox() {

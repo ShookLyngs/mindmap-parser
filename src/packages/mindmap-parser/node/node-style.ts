@@ -75,7 +75,13 @@ export const normalNodeTheme: NodeTheme = {
 
 export function createNodeTheme(theme: Partial<NodeTheme>) {
   return {
-    normal: theme.normal ?? normalNodeTheme.normal,
-    columns: theme.columns ?? normalNodeTheme.columns,
+    normal: {
+      ...normalNodeTheme.normal,
+      ...theme.normal,
+    },
+    columns: {
+      ...normalNodeTheme.columns,
+      ...theme.columns,
+    },
   };
 }

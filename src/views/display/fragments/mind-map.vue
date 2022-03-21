@@ -14,7 +14,7 @@
   // Functions
   import { ref, watchEffect } from 'vue';
   import { createMindmapParser, MindmapParser } from '@/packages/mindmap-parser';
-  import { testRawNode, testRawNodeAddedChild114, testRawNodeAddedChild134 } from '@/views/display/constant/node';
+  import { testDeepRawNode, testRawNode } from '@/views/display/constant/node';
 
   const canvas = ref<HTMLDivElement>();
   const parser = ref<MindmapParser<HTMLDivElement>>();
@@ -29,15 +29,9 @@
         root: testRawNode,
       });
 
-      resize();
-
       setTimeout(() => {
-        parser.value!.node.update(testRawNodeAddedChild114);
+        parser.value!.update(testDeepRawNode);
       }, 1000);
-
-      setTimeout(() => {
-        parser.value!.node.update(testRawNodeAddedChild134);
-      }, 3000);
     }
   });
 </script>

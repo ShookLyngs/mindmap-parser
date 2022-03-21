@@ -30,9 +30,13 @@ export class RenderNodeLineGroup {
   }
 
   render() {
-    this.lines.forEach((line) => {
-      line.render();
-    });
+    if (this.lines.length) {
+      this.lines.forEach((line) => {
+        line.render();
+      });
+    } else if (this.parent.children) {
+      this.updateLines(this.parent.children);
+    }
   }
 }
 
@@ -52,6 +56,10 @@ export class RenderNodeLine {
   }
 
   render() {
+    if (this.parent.content === 'Root')  {
+      console.log('rendered', this.parent.content, this.target.content);
+    }
+
     // Get sizes
     const parentSize = this.parent.size;
     const targetSize = this.target.size;
@@ -61,10 +69,6 @@ export class RenderNodeLine {
     const y1 = parentSize.y + (parentSize.height / 2);
     const x2 = targetSize.x;
     const y2 = targetSize.y + (targetSize.height / 2);
-
-    if (this.parent.content === 'Child 1') {
-      console.log(parentSize, targetSize);
-    }
 
     // Get path
     const path = createCubicBezierPath(x1, y1, x2, y2);

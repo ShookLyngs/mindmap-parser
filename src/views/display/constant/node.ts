@@ -213,3 +213,35 @@ export const testRawNodeAddedChild134 = {
     },
   ],
 };
+
+export const testRawNodeDifferentRoot = {
+  content: 'Root 2',
+  children: [
+    {
+      content: 'Child 1',
+    },
+    {
+      content: 'Child 2',
+    },
+  ],
+};
+
+export const testDeepRawNode = {
+  content: 'Deep Root',
+  children: generateDeepNodes(5),
+};
+function generateDeepNodes(count: number) {
+  if (count <= 0) {
+    return [];
+  }
+
+  const list = [];
+  for (let i = 0; i < count; i++) {
+    list.push({
+      content: `Deep Node ${count}-${i}`,
+      children: generateDeepNodes(count - 1),
+    });
+  }
+
+  return list;
+}

@@ -74,18 +74,21 @@ export class RenderNode {
    */
 
   renderNode() {
-    if (this.group) this.group.remove();
-
-    if (this.isRoot) {
-      this.group = this.context.canvas.group();
-      this.group.addClass('node-root');
-    } else {
-      this.group = this.parent!.childrenGroup.group();
-      this.group.addClass('node-group');
+    if (!this.group) {
+      if (this.isRoot) {
+        this.group = this.context.canvas.group();
+        this.group.addClass('node-root');
+      } else {
+        this.group = this.parent!.childrenGroup.group();
+        this.group.addClass('node-group');
+      }
     }
 
-    if (this.node) this.node.remove();
-    this.node = new RenderContentNode(this);
+    if (!this.node) {
+      this.node = new RenderContentNode(this);
+    } else {
+      this.node.render();
+    }
   }
 
   updateNodePosition() {
@@ -211,13 +214,12 @@ export class RenderNode {
   }
 
   removeLines() {
-    this.lineGroup.removeLines();
-  }
-  removeChildrenLines() {
     if (this.children) {
+      if (this.lineGroup) {
+        this.lineGroup.removeLines();
+      }
       this.children.forEach((child) => {
         child.removeLines();
-        child.removeChildrenLines();
       });
     }
   }
@@ -227,6 +229,9 @@ export class RenderNode {
    */
 
   render() {
+    // Remove lines
+    this.removeLines();
+
     // Render Node and its children nodes
     this.renderNode();
     this.renderChildrenGroup(this.raw.children);
@@ -240,23 +245,30 @@ export class RenderNode {
   }
 
   update(raw: RawNode) {
-    if (this.raw.content !== this.content) {
+    if (raw.content !== this.content) {
       this.raw = raw;
       this.content = raw.content;
 
       this.render();
+      return true;
     } else if (isRawNodeDifferent(this.raw, raw)) {
       this.raw.children = raw.children;
 
-      // Remove lines, and then render children nodes
-      this.removeChildrenLines();
-      this.renderChildrenGroup(raw.children);
+      // Remove lines
+      this.removeLines();
+
+      // Render children nodes
+      this.renderChildrenGroup(this.raw.children);
 
       // Update positions
       this.updateChildrenGroupPosition();
 
-      // Render line
+      // Render lines
       this.renderLineGroup();
+
+      return true;
+    } else {
+      return false;
     }
   }
 }

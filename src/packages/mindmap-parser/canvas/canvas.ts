@@ -1,5 +1,6 @@
 import { Svg, SVG } from '@svgdotjs/svg.js';
-import { RawNode, RenderNode } from '../node/node';
+import { RawNode } from '../node/raw-node';
+import { RenderNode } from '../node/node';
 import { getElement, Selector } from '../utils/element';
 
 export interface MindmapParser<T extends HTMLElement> {
@@ -9,6 +10,7 @@ export interface MindmapParser<T extends HTMLElement> {
   resize: () => void;
   moveToCenter: () => void;
   setElement: (element: T) => void;
+  update: (raw: RawNode) => boolean;
 }
 
 export interface CreateMindmapParserParams<T extends Selector> {
@@ -32,10 +34,18 @@ export function createMindmapParser<T extends Selector>({ selector, root }: Crea
     canvas.resize(canvas.element);
     moveToCenter();
   }
+  function update(raw: RawNode) {
+    const result = node.update(raw);
+    if (result) moveToCenter();
+    return result;
+  }
+
+  resize();
 
   return {
     ...canvas,
     node,
+    update,
     resize,
     moveToCenter,
   };
