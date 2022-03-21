@@ -57,11 +57,8 @@ export function createCanvas<T extends HTMLElement>(element: T) {
   }
   function bindEvent() {
     canvas.on('mousedown', onMouseDown);
-    canvas.on('touchstart', onMouseDown);
     canvas.on('mouseup', onMouseUp);
-    canvas.on('touchend', onMouseUp);
     canvas.on('mousemove', onMouseMove);
-    canvas.on('touchmove', onMouseMove);
     canvas.on('wheel', onZoom);
   }
 
@@ -74,10 +71,12 @@ export function createCanvas<T extends HTMLElement>(element: T) {
   }
   function onMouseMove(event: MouseEvent) {
     if (move) {
-      canvas.children()[0].dmove(event.movementX, event.movementY);
+      canvas.children()[0].translate(event.movementX, event.movementY);
     }
   }
   function onZoom(event: WheelEvent) {
+    event.preventDefault();
+    event.stopPropagation();
     canvas.children()[0].scale(event.deltaY < 0 ? 1.1 : 0.9);
   }
 
