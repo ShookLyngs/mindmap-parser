@@ -228,9 +228,9 @@ export const testRawNodeDifferentRoot = {
 
 export const testDeepRawNode = {
   content: 'Deep Root',
-  children: generateDeepNodes(5),
+  children: generateDeepNodes(5, ''),
 };
-function generateDeepNodes(count: number) {
+function generateDeepNodes(count: number, parent?: string) {
   if (count <= 0) {
     return [];
   }
@@ -238,8 +238,8 @@ function generateDeepNodes(count: number) {
   const list = [];
   for (let i = 0; i < count; i++) {
     list.push({
-      content: `Deep Node ${count}-${i}`,
-      children: generateDeepNodes(count - 1),
+      content: `Deep Node ${parent}${count}${i}`,
+      children: generateDeepNodes(count - 1, `${parent}${count}${i}`),
     });
   }
 

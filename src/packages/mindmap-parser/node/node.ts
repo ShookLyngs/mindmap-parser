@@ -95,15 +95,15 @@ export class RenderNode {
     if (this.parent && this.parent.children && this.index > 0) {
       const { margin } = this.style;
 
-      const childrenHeight = this.children ? this.childrenSize.maxHeight : 0;
-
       const previous = this.parent.children[this.index - 1];
       const previousSize = previous.size;
       const previousGroupSize = previous.group.bbox();
 
       if (previous.children) {
-        this.node.y(previousGroupSize.y2 + margin.y + (childrenHeight / 2));
+        const childrenGroupHeight = this.children.length ? this.childrenGroup.bbox().height :0;
+        this.node.y(previousGroupSize.y2 + margin.y + (childrenGroupHeight / 2));
       } else {
+        const childrenHeight = this.children.length ? this.childrenSize.maxHeight : 0;
         this.node.y(previousSize.y + previousSize.height + (childrenHeight / 2 - (previousSize.height / 2)) + margin.y);
       }
     } else if (!this.parent || this.index === 0) {
@@ -206,7 +206,7 @@ export class RenderNode {
     }
 
     // update children line groups
-    if (this.children) {
+    if (this.children.length) {
       this.children.forEach((child) => {
         child.renderLineGroup();
       });
@@ -214,7 +214,7 @@ export class RenderNode {
   }
 
   removeLines() {
-    if (this.children) {
+    if (this.children.length) {
       if (this.lineGroup) {
         this.lineGroup.removeLines();
       }
@@ -230,7 +230,10 @@ export class RenderNode {
 
   render() {
     // Remove lines
-    this.removeLines();
+    if (this.children) {
+      this.removeLines();
+    }
+
 
     // Render Node and its children nodes
     this.renderNode();

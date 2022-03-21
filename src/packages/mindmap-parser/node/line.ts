@@ -56,10 +56,6 @@ export class RenderNodeLine {
   }
 
   render() {
-    if (this.parent.content === 'Root')  {
-      console.log('rendered', this.parent.content, this.target.content);
-    }
-
     // Get sizes
     const parentSize = this.parent.size;
     const targetSize = this.target.size;
