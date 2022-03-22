@@ -71,9 +71,11 @@ export class RenderNodeLine {
 
     if (!this.line) {
       // Draw a line from parent to the target
-      this.line = this.parent.context.root.group.path(path);
+      this.line = new Path({ d: path });
       this.line.stroke(this.style.lineStroke);
       this.line.fill('none');
+
+      this.parent.context.root.group.add(this.line, 0);
     } else {
       // Update line
       this.line.plot(path);
