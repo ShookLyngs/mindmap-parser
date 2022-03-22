@@ -11,27 +11,38 @@
 <script setup lang="ts">
   // Components
   import { ResizeObserver } from 'polacoms';
+  // Constants
+  import { testRawNode } from '@/views/display/constant/node';
   // Functions
-  import { ref, watchEffect } from 'vue';
+  import { ref, shallowRef, watch, watchEffect } from 'vue';
+  import { useDisplay } from '../shared/use-display';
   import { createMindmapParser, MindmapParser } from '@/packages/mindmap-parser';
-  import { testDeepRawNode, testRawNode } from '@/views/display/constant/node';
 
+  // Mindmap display
   const canvas = ref<HTMLDivElement>();
-  const parser = ref<MindmapParser<HTMLDivElement>>();
+  const parser = shallowRef<MindmapParser<HTMLDivElement>>();
+  function init() {
+    parser.value = createMindmapParser({
+      selector: canvas.value,
+      root: node.value,
+    });
+  }
   function resize() {
     parser.value?.resize?.();
   }
 
-  watchEffect(() => {
-    if (canvas.value) {
-      parser.value = createMindmapParser({
-        selector: canvas.value,
-        root: testRawNode,
-      });
+  // When input changed, update the mindmap
+  const { node } = useDisplay();
+  watch(node, (newNode) => {
+    if (newNode && parser.value) {
+      parser.value.update(newNode);
+    }
+  });
 
-      setTimeout(() => {
-        parser.value!.update(testDeepRawNode);
-      }, 1000);
+  // When node exists and mindmap is not, init the mindmap
+  watchEffect(() => {
+    if (canvas.value && !parser.value && node.value) {
+      init();
     }
   });
 </script>

@@ -16,6 +16,10 @@
   import MindMap from './fragments/mind-map.vue';
   // Components
   import { Scrollbar } from 'polacoms';
+  // Functions
+  import { useDisplay } from './shared/use-display';
+
+  useDisplay();
 </script>
 
 <style scoped>

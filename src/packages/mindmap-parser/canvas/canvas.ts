@@ -1,5 +1,5 @@
 import { Svg, SVG } from '@svgdotjs/svg.js';
-import { RawNode } from '../node/raw-node';
+import { RawNode } from '../raw-node/raw-node';
 import { RenderNode } from '../node/node';
 import { getElement, Selector } from '../utils/element';
 

@@ -11,7 +11,11 @@
       >
         <icon class="text-xl"><clear-round /></icon>
       </loader>
-      <loader class="opacity-button px-6 h-9 flex rounded-full justify-center items-center text-slate-100 bg-blue-600" @click="parse">
+
+      <loader
+        class="opacity-button px-6 h-9 flex rounded-full justify-center items-center text-slate-100 bg-blue-600"
+        @click="parse"
+      >
         Parse
       </loader>
     </div>
@@ -25,23 +29,9 @@
   import { Icon } from '@vicons/utils';
   import { ClearRound } from '@vicons/material';
   // Functions
-  import { ref } from 'vue';
+  import { useDisplay } from '../shared/use-display';
 
-  const input = ref(
-`- Root
-  - Child 1
-    - Child 1-1
-    - Child 1-2
-  - Child 2
-    - Child 2-1
-    - Child 2-2`);
-  function clear() {
-    input.value = '';
-  }
-  function parse() {
-    let parsed = input.value.trim().replace(/\r+/g, '\n');
-    console.log(parsed.split(/\n/));
-  }
+  const { input, clear, parse } = useDisplay();
 </script>
 
 <style scoped>
