@@ -20,6 +20,15 @@ export function stringToRawNode(input: string, options: StringToRawNodeOptions):
     // Create context list
     const nodes = createStringNodeContextList(rows, options.space);
 
+    // Check if root node count is wrong
+    const roots = nodes.filter(node => node.level === 0).length;
+    if (roots < 1) {
+      throw new Error('No root node found in the input string');
+    }
+    if (roots > 1) {
+      console.warn('You have passed more than one root in the input string, but the parser only supports one root to be rendered.');
+    }
+
     // Create raw node from the root
     return convertRawNode(nodes, 0);
   } else {
