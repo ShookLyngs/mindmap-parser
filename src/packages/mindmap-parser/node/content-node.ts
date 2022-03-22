@@ -1,5 +1,5 @@
 import { RenderNode } from './node';
-import { G, Rect } from '@svgdotjs/svg.js';
+import { G, Rect, Text } from '@svgdotjs/svg.js';
 
 export class RenderContentNode {
   parent: RenderNode;
@@ -27,30 +27,43 @@ export class RenderContentNode {
   }
 
   render() {
-    // Remove old content node
-    this.remove();
-
     // Create new group
-    this.node = this.parent.group.group();
-    this.node.addClass('node-content');
+    if (!this.node) {
+      this.node = this.parent.group.group();
+      this.node.addClass('node-content');
+    }
 
     // Get NodeStyle
     const { padding, backgroundColor, textFont, backgroundRadius, backgroundStroke } = this.style;
 
     // Create text node
-    const text = this.node.text(this.content);
+    let text: Text = this.node.findOne('.node-content-text') as Text;
+    if (!text) {
+      text = this.node.text(this.content);
+      text.addClass('node-content-text');
+    }
+
+    // Style text node
     text.font(textFont);
 
     // Get text box size
     const size = text.bbox();
 
+    // Find background node
+    let background: Rect = this.node.findOne('.node-content-background') as Rect;
+    const backgroundExistedBefore = !!background;
+
     // Create background node, insert before text node
-    const background = new Rect({
-      x: size.x,
-      y: size.y,
-      width: Math.ceil(size.width + padding.x * 2),
-      height: Math.ceil(size.height + padding.y * 2),
-    });
+    if (!background) {
+      background = new Rect({
+        x: size.x,
+        y: size.y,
+        width: Math.ceil(size.width + padding.x * 2),
+        height: Math.ceil(size.height + padding.y * 2),
+      });
+
+      background.addClass('node-content-background');
+    }
 
     // Style background node
     background.fill(backgroundColor);
@@ -58,7 +71,9 @@ export class RenderContentNode {
     background.radius(backgroundRadius);
 
     // Insert before text node
-    this.node.add(background, 0);
+    if (!backgroundExistedBefore) {
+      this.node.add(background, 0);
+    }
 
     // Move text node to the center of the background node
     const backgroundSize = background.bbox();

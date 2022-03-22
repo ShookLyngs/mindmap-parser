@@ -1,4 +1,4 @@
-import { G, Svg } from '@svgdotjs/svg.js';
+import { Box, G, Svg } from '@svgdotjs/svg.js';
 import { createRenderNodeContext, RenderNodeContext } from './context';
 import { isRawNodeDifferent, RawNode } from '../raw-node/raw-node';
 import { RenderContentNode } from './content-node';
@@ -99,21 +99,45 @@ export class RenderNode {
       const previousSize = previous.size;
       const previousGroupSize = previous.group.bbox();
 
+      const childrenHeight = this.children.length ? this.childrenSize.maxHeight : 0;
+      const childrenYDiff = this.children.length ? this.children[0].size.y - this.childrenGroup.bbox().y : 0;
+
       if (previous.children) {
-        const childrenGroupHeight = this.children.length ? this.childrenGroup.bbox().height :0;
-        this.node.y(previousGroupSize.y2 + margin.y + (childrenGroupHeight / 2));
+        this.node.y(previousGroupSize.y2 + margin.y + childrenYDiff + (childrenHeight / 2));
       } else {
-        const childrenHeight = this.children.length ? this.childrenSize.maxHeight : 0;
         this.node.y(previousSize.y + previousSize.height + (childrenHeight / 2 - (previousSize.height / 2)) + margin.y);
       }
     } else if (!this.parent || this.index === 0) {
+      // TODO: this part is a mess and need to be refactored
       if (this.children.length) {
         const size = this.size;
+        const { margin } = this.style;
         const childrenSize = this.childrenSize;
         const firstChildSize = this.children[0].size;
+        const previousAncestor = this.findAncestorPreviousNode();
 
-        this.node.y(firstChildSize.y + (size.height / 2) + (childrenSize.height / 2));
+        if (previousAncestor) {
+          this.node.y(previousAncestor.group.bbox().y2 + margin.y + (size.height / 2) + (childrenSize.height / 2));
+        } else {
+          this.node.y(firstChildSize.y + (size.height / 2) + (childrenSize.height / 2));
+        }
+      } else {
+        const previousAncestor = this.findAncestorPreviousNode();
+
+        if (previousAncestor) {
+          this.node.y(previousAncestor.group.bbox().y2 + this.style.margin.y + (this.size.height / 2));
+        } else if (this.parent) {
+          this.node.y(this.parent.size.y);
+        }
       }
+    }
+  }
+
+  findAncestorPreviousNode() {
+    if (this.index > 0) {
+      return this.parent.children[this.index - 1];
+    } else if (this.parent) {
+      return this.parent.findAncestorPreviousNode();
     }
   }
 
@@ -171,18 +195,20 @@ export class RenderNode {
   }
 
   updateChildrenGroupPosition() {
-    if (!this.childrenGroup) return;
+    if (!this.childrenGroup || !this.children?.length) {
+      return;
+    }
 
     const { margin } = this.style;
     const { x, y, width, height } = this.size;
-    const childrenSize = this.childrenSize;
     const firstChildSize = this.children[0].size;
     const childrenGroupSize = this.childrenGroup.bbox();
 
     const firstChildYDiff = firstChildSize.y - childrenGroupSize.y;
+    const childrenHeight = this.children[this.children.length - 1].size.y2 - this.children[0].size.y;
 
     this.childrenGroup.x(x + width + margin.x);
-    this.childrenGroup.y(y + height / 2 - firstChildYDiff - (childrenSize.height / 2));
+    this.childrenGroup.y(y + height / 2 - firstChildYDiff - (childrenHeight / 2));
   }
 
   removeChildren() {
@@ -191,6 +217,31 @@ export class RenderNode {
     }
 
     this.children = [];
+  }
+
+  updateChildrenSize() {
+    this.childrenSize = {
+      maxHeight: 0,
+      height: 0,
+      width: 0,
+      y: 0,
+    };
+
+    for (let i = 0; i < this.children.length; i++) {
+      const child = this.children[i];
+
+      // Update children size
+      this.childrenSize.height = i > 0 ? child.size.y2 - this.children[0].size.y : child.size.height;
+
+      // Update children max height
+      this.childrenSize.maxHeight = Math.max(child.childrenSize.maxHeight, this.childrenSize.height);
+      if (child.size.width > this.childrenSize.width) {
+        this.childrenSize.width = child.size.width;
+      }
+    }
+
+    // Update children group size
+    this.childrenSize.y = this.childrenGroup.bbox().y;
   }
 
   /**
@@ -234,7 +285,6 @@ export class RenderNode {
       this.removeLines();
     }
 
-
     // Render Node and its children nodes
     this.renderNode();
     this.renderChildrenGroup(this.raw.children);
@@ -247,31 +297,41 @@ export class RenderNode {
     this.renderLineGroup();
   }
 
-  update(raw: RawNode) {
-    if (raw.content !== this.content) {
+  update(raw: RawNode, force: boolean = false) {
+    const contentChanged = this.content !== raw.content;
+    const childrenChanged = (this.children?.length ?? 0) !== (raw.children?.length ?? 0);
+
+    if (force || contentChanged || childrenChanged) {
       this.raw = raw;
       this.content = raw.content;
 
       this.render();
       return true;
-    } else if (isRawNodeDifferent(this.raw, raw)) {
-      this.raw.children = raw.children;
-
-      // Remove lines
-      this.removeLines();
-
-      // Render children nodes
-      this.renderChildrenGroup(this.raw.children);
-
-      // Update positions
-      this.updateChildrenGroupPosition();
-
-      // Render lines
-      this.renderLineGroup();
-
-      return true;
     } else {
-      return false;
+      if (!this.children?.length) {
+        return false;
+      }
+
+      let updated = false;
+      for (let i = 0; i < this.children.length; i++) {
+        if (this.children[i].update(raw.children[i], updated)) {
+          updated = true;
+        }
+      }
+
+      if (updated) {
+        // Update children size
+        this.updateChildrenSize();
+
+        // Update positions
+        this.updateNodePosition();
+        this.updateChildrenGroupPosition();
+
+        // Render line
+        this.renderLineGroup();
+      }
+
+      return updated;
     }
   }
 
