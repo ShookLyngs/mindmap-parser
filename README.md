@@ -3,11 +3,11 @@ A simple project that implemented basic functionality of a MindMap parser.
 
 ## Install dependencies
 ```shell
-npm install
+pnpm install
 ```
 ## Start project
 ```shell
-npm run dev
+pnpm run dev
 ```
 
 ## Example
