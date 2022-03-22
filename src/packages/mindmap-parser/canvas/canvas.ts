@@ -11,6 +11,7 @@ export interface MindmapParser<T extends HTMLElement> {
   moveToCenter: () => void;
   setElement: (element: T) => void;
   update: (raw: RawNode) => boolean;
+  destroy: () => void;
 }
 
 export interface CreateMindmapParserParams<T extends Selector> {
@@ -39,6 +40,10 @@ export function createMindmapParser<T extends Selector>({ selector, root }: Crea
     if (result) moveToCenter();
     return result;
   }
+  function destroy() {
+    node.destroy();
+    canvas.destroy();
+  }
 
   resize();
 
@@ -47,6 +52,7 @@ export function createMindmapParser<T extends Selector>({ selector, root }: Crea
     node,
     update,
     resize,
+    destroy,
     moveToCenter,
   };
 }
@@ -64,6 +70,9 @@ export function createCanvas<T extends HTMLElement>(element: T) {
   }
   function resize(element: T) {
     canvas.size(element.offsetWidth, element.offsetHeight);
+  }
+  function destroy() {
+    canvas.remove();
   }
   function bindEvent() {
     canvas.on('mousedown', onMouseDown);
@@ -96,6 +105,7 @@ export function createCanvas<T extends HTMLElement>(element: T) {
     element,
     canvas,
     resize,
+    destroy,
     setElement,
   };
 }

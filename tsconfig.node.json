@@ -8,8 +8,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "mindmap-parser/*": ["./src/packages/mindmap/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [

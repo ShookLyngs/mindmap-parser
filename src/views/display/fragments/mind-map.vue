@@ -5,14 +5,22 @@
     <resize-observer @resize="resize">
       <div ref="canvas" class="w-full h-full cursor-grab active:cursor-grabbing" />
     </resize-observer>
+
+    <div class="absolute inset-0 flex justify-center items-center text-7xl bg-slate-100" v-if="!node">
+      <div class="w-32 h-32 rounded-full flex justify-center items-center text-slate-500 bg-slate-200">
+        <icon >
+          <account-tree-round />
+        </icon>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
   // Components
   import { ResizeObserver } from 'polacoms';
-  // Constants
-  import { testRawNode } from '@/views/display/constant/node';
+  import { Icon } from '@vicons/utils';
+  import { AccountTreeRound } from '@vicons/material';
   // Functions
   import { ref, shallowRef, watch, watchEffect } from 'vue';
   import { useDisplay } from '../shared/use-display';
@@ -36,6 +44,9 @@
   watch(node, (newNode) => {
     if (newNode && parser.value) {
       parser.value.update(newNode);
+    } else if (!newNode && parser.value) {
+      parser.value.destroy();
+      parser.value = void 0;
     }
   });
 

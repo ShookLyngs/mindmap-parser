@@ -274,4 +274,10 @@ export class RenderNode {
       return false;
     }
   }
+
+  destroy() {
+    this.removeLines();
+    this.removeChildren();
+    this.group.remove();
+  }
 }

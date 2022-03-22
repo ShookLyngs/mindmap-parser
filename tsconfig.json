@@ -13,8 +13,7 @@
     "composite": false,
     "lib": ["esnext", "dom"],
     "paths": {
-      "@/*": ["./src/*"],
-      "mindmap-parser/*": ["./src/packages/mindmap/*"]
+      "@/*": ["./src/*"]
     }
   },
   "exclude": [
