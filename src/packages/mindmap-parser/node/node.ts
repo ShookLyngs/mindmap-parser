@@ -92,43 +92,28 @@ export class RenderNode {
   }
 
   updateNodePosition() {
-    if (this.parent && this.parent.children && this.index > 0) {
-      const { margin } = this.style;
+    const { height } = this.size;
+    const { margin } = this.style;
+    const previousAncestor = this.findAncestorPreviousNode();
+    const previousAncestorY2 = previousAncestor ? previousAncestor.group.bbox().y2 : 0;
 
-      const previous = this.parent.children[this.index - 1];
-      const previousSize = previous.size;
-      const previousGroupSize = previous.group.bbox();
+    if (this.children.length) {
+      const firstChildSize = this.children[0].size;
+      const childrenHeight = this.childrenSize.maxHeight;
+      const childrenYDiff = firstChildSize.y - this.childrenGroup.bbox().y;
 
-      const childrenHeight = this.children.length ? this.childrenSize.maxHeight : 0;
-      const childrenYDiff = this.children.length ? this.children[0].size.y - this.childrenGroup.bbox().y : 0;
-
-      if (previous.children) {
-        this.node.y(previousGroupSize.y2 + margin.y + childrenYDiff + (childrenHeight / 2));
+      if (previousAncestor) {
+        this.node.y(previousAncestorY2 + margin.y + childrenYDiff + (childrenHeight / 2));
       } else {
-        this.node.y(previousSize.y + previousSize.height + (childrenHeight / 2 - (previousSize.height / 2)) + margin.y);
+        this.node.y(firstChildSize.y + childrenYDiff + (childrenHeight / 2));
       }
-    } else if (!this.parent || this.index === 0) {
-      // TODO: this part is a mess and need to be refactored
-      if (this.children.length) {
-        const size = this.size;
-        const { margin } = this.style;
-        const childrenSize = this.childrenSize;
-        const firstChildSize = this.children[0].size;
-        const previousAncestor = this.findAncestorPreviousNode();
-
-        if (previousAncestor) {
-          this.node.y(previousAncestor.group.bbox().y2 + margin.y + (size.height / 2) + (childrenSize.height / 2));
-        } else {
-          this.node.y(firstChildSize.y + (size.height / 2) + (childrenSize.height / 2));
-        }
+    } else {
+      if (previousAncestor) {
+        this.node.y(previousAncestorY2 + margin.y + (height / 2));
+      } else if (this.parent) {
+        this.node.y(this.parent.size.y);
       } else {
-        const previousAncestor = this.findAncestorPreviousNode();
-
-        if (previousAncestor) {
-          this.node.y(previousAncestor.group.bbox().y2 + this.style.margin.y + (this.size.height / 2));
-        } else if (this.parent) {
-          this.node.y(this.parent.size.y);
-        }
+        this.node.y(0);
       }
     }
   }
@@ -202,10 +187,9 @@ export class RenderNode {
     const { margin } = this.style;
     const { x, y, width, height } = this.size;
     const firstChildSize = this.children[0].size;
+    const childrenHeight = this.childrenSize.height;
     const childrenGroupSize = this.childrenGroup.bbox();
-
     const firstChildYDiff = firstChildSize.y - childrenGroupSize.y;
-    const childrenHeight = this.children[this.children.length - 1].size.y2 - this.children[0].size.y;
 
     this.childrenGroup.x(x + width + margin.x);
     this.childrenGroup.y(y + height / 2 - firstChildYDiff - (childrenHeight / 2));

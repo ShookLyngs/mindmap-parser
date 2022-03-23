@@ -41,6 +41,8 @@ export class RenderContentNode {
     if (!text) {
       text = this.node.text(this.content);
       text.addClass('node-content-text');
+    } else {
+      text.words(this.content);
     }
 
     // Style text node
@@ -51,7 +53,6 @@ export class RenderContentNode {
 
     // Find background node
     let background: Rect = this.node.findOne('.node-content-background') as Rect;
-    const backgroundExistedBefore = !!background;
 
     // Create background node, insert before text node
     if (!background) {
@@ -63,17 +64,18 @@ export class RenderContentNode {
       });
 
       background.addClass('node-content-background');
+      this.node.add(background, 0);
+    } else {
+      background.size(
+        Math.ceil(size.width + padding.x * 2),
+        Math.ceil(size.height + padding.y * 2),
+      );
     }
 
     // Style background node
     background.fill(backgroundColor);
     background.stroke(backgroundStroke);
     background.radius(backgroundRadius);
-
-    // Insert before text node
-    if (!backgroundExistedBefore) {
-      this.node.add(background, 0);
-    }
 
     // Move text node to the center of the background node
     const backgroundSize = background.bbox();

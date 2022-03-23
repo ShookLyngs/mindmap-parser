@@ -27,7 +27,7 @@ export const normalNodeStyle: NodeStyle = {
   },
   margin: {
     x: 20,
-    y: 10,
+    y: 4,
   },
   lineStroke: {
     width: 2,
