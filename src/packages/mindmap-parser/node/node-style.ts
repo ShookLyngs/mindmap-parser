@@ -1,6 +1,5 @@
 import { FontData, StrokeData } from '@svgdotjs/svg.js';
 
-
 export interface NodeSpace {
   x: number;
   y: number;

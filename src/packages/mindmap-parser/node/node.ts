@@ -1,6 +1,6 @@
-import { Box, G, Svg } from '@svgdotjs/svg.js';
+import { G, Svg } from '@svgdotjs/svg.js';
 import { createRenderNodeContext, RenderNodeContext } from './context';
-import { isRawNodeDifferent, RawNode } from '../raw-node/raw-node';
+import { RawNode } from '../raw-node/raw-node';
 import { RenderContentNode } from './content-node';
 import { RenderNodeLineGroup } from './line';
 import { NodeTheme } from './node-style';
